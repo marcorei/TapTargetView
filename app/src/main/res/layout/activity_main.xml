@@ -61,4 +61,16 @@
         android:layout_height="wrap_content"
         android:padding="16dp"/>
 
+    <TextView
+        android:id="@+id/button"
+        android:height="48dp"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimary"
+        android:fontFamily="sans-serif-medium"
+        android:background="@drawable/rounded_coreners_button"
+        android:text="ADD TOOOOOOOO FAVES"
+        android:padding="16dp"/>
+
 </LinearLayout>

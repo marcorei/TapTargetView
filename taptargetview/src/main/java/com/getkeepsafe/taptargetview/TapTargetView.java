@@ -33,6 +33,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -72,6 +73,8 @@ public class TapTargetView extends View {
 
   final int TARGET_PADDING;
   final int TARGET_RADIUS;
+  final int TARGET_WIDTH;
+  final int TARGET_HEIGHT;
   final int TARGET_PULSE_RADIUS;
   final int TEXT_PADDING;
   final int TEXT_SPACING;
@@ -94,6 +97,8 @@ public class TapTargetView extends View {
   final Paint outerCircleShadowPaint;
   final Paint targetCirclePaint;
   final Paint targetCirclePulsePaint;
+
+  final boolean pulseEnabled;
 
   CharSequence title;
   @Nullable
@@ -122,6 +127,8 @@ public class TapTargetView extends View {
   // Drawing properties
   Rect drawingBounds;
   Rect textBounds;
+  RectF targetShapeBounds = new RectF();
+  RectF targetPulseShapeBounds = new RectF();
 
   Path outerCirclePath;
   float outerCircleRadius;
@@ -130,9 +137,13 @@ public class TapTargetView extends View {
   int outerCircleAlpha;
 
   float targetCirclePulseRadius;
+  float targetCirclePulseWidth;
+  float targetCirclePulseHeight;
   int targetCirclePulseAlpha;
 
   float targetCircleRadius;
+  float targetCircleWidth;
+  float targetCircleHeight;
   int targetCircleAlpha;
 
   int textAlpha;
@@ -242,10 +253,17 @@ public class TapTargetView extends View {
       targetCircleAlpha = (int) Math.min(255.0f, (lerpTime * 1.5f * 255.0f));
 
       if (expanding) {
-        targetCircleRadius = TARGET_RADIUS * Math.min(1.0f, lerpTime * 1.5f);
+        float scaleFactor = Math.min(1.0f, lerpTime * 1.5f);
+        targetCircleRadius = TARGET_RADIUS * scaleFactor;
+        targetCircleWidth = TARGET_WIDTH * scaleFactor;
+        targetCircleHeight = TARGET_HEIGHT * scaleFactor;
       } else {
         targetCircleRadius = TARGET_RADIUS * lerpTime;
+        targetCircleWidth = TARGET_WIDTH * lerpTime;
+        targetCircleHeight = TARGET_HEIGHT * lerpTime;
         targetCirclePulseRadius *= lerpTime;
+        targetCirclePulseWidth *= lerpTime;
+        targetCirclePulseHeight *= lerpTime;
       }
 
       textAlpha = (int) (delayedLerp(lerpTime, 0.7f) * 255);
@@ -285,8 +303,16 @@ public class TapTargetView extends View {
         public void onUpdate(float lerpTime) {
           final float pulseLerp = delayedLerp(lerpTime, 0.5f);
           targetCirclePulseRadius = (1.0f + pulseLerp) * TARGET_RADIUS;
+          float pulseDr = targetCirclePulseRadius - TARGET_RADIUS;
+          targetCirclePulseWidth = TARGET_WIDTH + 2 * pulseDr;
+          targetCirclePulseHeight = TARGET_HEIGHT + 2 * pulseDr;
           targetCirclePulseAlpha = (int) ((1.0f - pulseLerp) * 255);
-          targetCircleRadius = TARGET_RADIUS + halfwayLerp(lerpTime) * TARGET_PULSE_RADIUS;
+
+          float targetDr = halfwayLerp(lerpTime) * TARGET_PULSE_RADIUS;
+
+          targetCircleRadius = TARGET_RADIUS + targetDr ;
+          targetCircleWidth = TARGET_WIDTH + targetDr * 2;
+          targetCircleHeight = TARGET_HEIGHT + targetDr * 2;
 
           if (outerCircleRadius != calculatedOuterCircleRadius) {
             outerCircleRadius = calculatedOuterCircleRadius;
@@ -328,8 +354,12 @@ public class TapTargetView extends View {
           outerCirclePath.reset();
           outerCirclePath.addCircle(outerCircleCenter[0], outerCircleCenter[1], outerCircleRadius, Path.Direction.CW);
           targetCircleRadius = (1.0f - lerpTime) * TARGET_RADIUS;
+          targetCircleWidth = (1.0f - lerpTime) * TARGET_WIDTH;
+          targetCircleHeight = (1.0f - lerpTime) * TARGET_HEIGHT;
           targetCircleAlpha = (int) ((1.0f - lerpTime) * 255.0f);
           targetCirclePulseRadius = (1.0f + lerpTime) * TARGET_RADIUS;
+          targetCirclePulseWidth = (1.0f + lerpTime) * TARGET_WIDTH;
+          targetCirclePulseHeight = (1.0f + lerpTime) * TARGET_HEIGHT;
           targetCirclePulseAlpha = (int) ((1.0f - lerpTime) * targetCirclePulseAlpha);
           textAlpha = (int) ((1.0f - spedUpLerp) * 255.0f);
           calculateDrawingBounds();
@@ -383,6 +413,8 @@ public class TapTargetView extends View {
     TARGET_PADDING = UiUtil.dp(context, 20);
     CIRCLE_PADDING = UiUtil.dp(context, 40);
     TARGET_RADIUS = UiUtil.dp(context, target.targetRadius);
+    TARGET_WIDTH = UiUtil.dp(context, Math.max(target.targetRadius * 2, target.targetWidth));
+    TARGET_HEIGHT = UiUtil.dp(context, Math.max(target.targetRadius * 2, target.targetHeight));
     TEXT_PADDING = UiUtil.dp(context, 40);
     TEXT_SPACING = UiUtil.dp(context, 8);
     TEXT_MAX_WIDTH = UiUtil.dp(context, 360);
@@ -391,6 +423,8 @@ public class TapTargetView extends View {
     SHADOW_DIM = UiUtil.dp(context, 8);
     SHADOW_JITTER_DIM = UiUtil.dp(context, 1);
     TARGET_PULSE_RADIUS = (int) (0.1f * TARGET_RADIUS);
+
+    pulseEnabled = target.targetPulseEnabled;
 
     outerCirclePath = new Path();
     targetBounds = new Rect();
@@ -477,8 +511,8 @@ public class TapTargetView extends View {
       public void onClick(View v) {
         if (listener == null || outerCircleCenter == null || !isInteractable) return;
 
-        final boolean clickedInTarget =
-            distance(targetBounds.centerX(), targetBounds.centerY(), (int) lastTouchX, (int) lastTouchY) <= targetCircleRadius;
+        final boolean clickedInTarget = Math.abs((int) lastTouchX - targetBounds.centerX()) < targetCircleWidth / 2
+                && Math.abs((int) lastTouchY - targetBounds.centerY()) < targetCircleHeight / 2;
         final double distanceToOuterCircleCenter = distance(outerCircleCenter[0], outerCircleCenter[1],
             (int) lastTouchX, (int) lastTouchY);
         final boolean clickedInsideOfOuterCircle = distanceToOuterCircleCenter <= outerCircleRadius;
@@ -651,13 +685,23 @@ public class TapTargetView extends View {
     c.drawCircle(outerCircleCenter[0], outerCircleCenter[1], outerCircleRadius, outerCirclePaint);
 
     targetCirclePaint.setAlpha(targetCircleAlpha);
-    if (targetCirclePulseAlpha > 0) {
+    if (pulseEnabled && targetCirclePulseAlpha > 0) {
       targetCirclePulsePaint.setAlpha(targetCirclePulseAlpha);
-      c.drawCircle(targetBounds.centerX(), targetBounds.centerY(),
-          targetCirclePulseRadius, targetCirclePulsePaint);
+//      c.drawCircle(targetBounds.centerX(), targetBounds.centerY(),
+//          targetCirclePulseRadius, targetCirclePulsePaint);
+      targetPulseShapeBounds.set(targetBounds.centerX() - targetCirclePulseWidth / 2,
+              targetBounds.centerY() - targetCirclePulseHeight / 2,
+              targetBounds.centerX() + targetCirclePulseWidth / 2,
+              targetBounds.centerY() + targetCirclePulseHeight / 2);
+      c.drawRoundRect(targetPulseShapeBounds, targetCirclePulseRadius, targetCirclePulseRadius, targetCirclePulsePaint);
     }
-    c.drawCircle(targetBounds.centerX(), targetBounds.centerY(),
-        targetCircleRadius, targetCirclePaint);
+    targetShapeBounds.set(targetBounds.centerX() - targetCircleWidth / 2,
+            targetBounds.centerY() - targetCircleHeight / 2,
+            targetBounds.centerX() + targetCircleWidth / 2,
+            targetBounds.centerY() + targetCircleHeight / 2);
+    c.drawRoundRect(targetShapeBounds, targetCircleRadius, targetCircleRadius, targetCirclePaint);
+//    c.drawCircle(targetBounds.centerX(), targetBounds.centerY(),
+//        targetCircleRadius, targetCirclePaint);
 
     saveCount = c.save();
     {

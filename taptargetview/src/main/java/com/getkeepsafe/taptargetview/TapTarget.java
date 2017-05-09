@@ -46,6 +46,10 @@ public class TapTarget {
 
   float outerCircleAlpha = 0.96f;
   int targetRadius = 44;
+  int targetWidth;
+  int targetHeight;
+
+  boolean targetPulseEnabled = true;
 
   Rect bounds;
   Drawable icon;
@@ -411,6 +415,24 @@ public class TapTarget {
   /** Specify the target radius in dp. **/
   public TapTarget targetRadius(int targetRadius) {
     this.targetRadius = targetRadius;
+    return this;
+  }
+
+  /** Specify the target height in dp. **/
+  public TapTarget targetWidth(int targetWidth) {
+    this.targetWidth = targetWidth;
+    return this;
+  }
+
+  /** Specify the target height in dp. **/
+  public TapTarget targetHeight(int targetHeight) {
+    this.targetHeight = targetHeight;
+    return this;
+  }
+
+  /** Specify the target height in dp. **/
+  public TapTarget targetPulseEnabled(boolean enabled) {
+    this.targetPulseEnabled = enabled;
     return this;
   }
 
