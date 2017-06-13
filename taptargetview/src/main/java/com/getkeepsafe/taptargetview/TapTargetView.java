@@ -222,7 +222,7 @@ public class TapTargetView extends View {
 
     /** Signals that the user clicked on the outer circle portion of the tap target **/
     public void onOuterCircleClick(TapTargetView view) {
-      // no-op as default
+      view.dismiss(true);
     }
 
     /**
