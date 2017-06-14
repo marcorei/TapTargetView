@@ -443,18 +443,21 @@ public class TapTargetView extends View {
     titlePaint = new TextPaint();
     titlePaint.setTextSize(target.titleTextSizePx(context));
     titlePaint.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-    titlePaint.setAntiAlias(true);
+//    titlePaint.setAntiAlias(true);
+    titlePaint.setFlags(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
 
     descriptionPaint = new TextPaint();
     descriptionPaint.setTextSize(target.descriptionTextSizePx(context));
     descriptionPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL));
-    descriptionPaint.setAntiAlias(true);
+//    descriptionPaint.setAntiAlias(true);
+    descriptionPaint.setFlags(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
 //    descriptionPaint.setAlpha((int) (0.54f * 255.0f));
 
     confirmlabelPaint = new TextPaint();
     confirmlabelPaint.setTextSize(target.confirmLabelTextSizePx(context));
     confirmlabelPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL));
-    confirmlabelPaint.setAntiAlias(true);
+//    confirmlabelPaint.setAntiAlias(true);
+    confirmlabelPaint.setFlags(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
 
     outerCirclePaint = new Paint();
     outerCirclePaint.setAntiAlias(true);
