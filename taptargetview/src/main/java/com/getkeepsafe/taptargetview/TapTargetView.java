@@ -93,6 +93,7 @@ public class TapTargetView extends View {
 
   final TextPaint titlePaint;
   final TextPaint descriptionPaint;
+  final TextPaint confirmlabelPaint;
   final Paint outerCirclePaint;
   final Paint outerCircleShadowPaint;
   final Paint targetCirclePaint;
@@ -107,6 +108,10 @@ public class TapTargetView extends View {
   CharSequence description;
   @Nullable
   StaticLayout descriptionLayout;
+  @Nullable
+  CharSequence confirmLabel;
+  @Nullable
+  StaticLayout confirmLabelLayout;
   boolean isDark;
   boolean debug;
   boolean shouldTintTarget;
@@ -413,6 +418,7 @@ public class TapTargetView extends View {
     this.listener = userListener != null ? userListener : new Listener();
     this.title = target.title;
     this.description = target.description;
+    this.confirmLabel = target.confirmLabel;
 
     TARGET_PADDING = UiUtil.dp(context, 20);
     CIRCLE_PADDING = UiUtil.dp(context, 40);
@@ -444,6 +450,11 @@ public class TapTargetView extends View {
     descriptionPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL));
     descriptionPaint.setAntiAlias(true);
 //    descriptionPaint.setAlpha((int) (0.54f * 255.0f));
+
+    confirmlabelPaint = new TextPaint();
+    confirmlabelPaint.setTextSize(target.confirmLabelTextSizePx(context));
+    confirmlabelPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL));
+    confirmlabelPaint.setAntiAlias(true);
 
     outerCirclePaint = new Paint();
     outerCirclePaint.setAntiAlias(true);
@@ -627,12 +638,23 @@ public class TapTargetView extends View {
       descriptionPaint.setColor(titlePaint.getColor());
     }
 
+    final Integer confirmLabelTextColor = target.confirmLabelTextColorInt(context);
+    if (confirmLabelTextColor != null) {
+      confirmlabelPaint.setColor(confirmLabelTextColor);
+    } else {
+      confirmlabelPaint.setColor(titlePaint.getColor());
+    }
+
     if (target.titleTypeface != null) {
       titlePaint.setTypeface(target.titleTypeface);
     }
 
     if (target.descriptionTypeface != null) {
       descriptionPaint.setTypeface(target.descriptionTypeface);
+    }
+
+    if (target.confirmLabelTypeface != null) {
+      confirmlabelPaint.setTypeface(target.confirmLabelTypeface);
     }
   }
 
@@ -720,6 +742,12 @@ public class TapTargetView extends View {
 //        descriptionPaint.setAlpha((int) (0.54f * textAlpha));
         descriptionPaint.setAlpha(textAlpha);
         descriptionLayout.draw(c);
+      }
+
+      if (confirmLabelLayout != null && descriptionLayout != null) {
+        c.translate(0, descriptionLayout.getHeight() + TEXT_SPACING);
+        confirmlabelPaint.setAlpha(textAlpha);
+        confirmLabelLayout.draw(c);
       }
     }
     c.restoreToCount(saveCount);
@@ -911,6 +939,13 @@ public class TapTargetView extends View {
     } else {
       descriptionLayout = null;
     }
+
+    if (confirmLabel != null) {
+      confirmLabelLayout = new StaticLayout(confirmLabel, confirmlabelPaint, textWidth,
+              Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+    } else {
+      confirmLabelLayout = null;
+    }
   }
 
   float halfwayLerp(float lerp) {
@@ -1008,7 +1043,11 @@ public class TapTargetView extends View {
       return titleLayout.getHeight() + TEXT_SPACING;
     }
 
-    return titleLayout.getHeight() + descriptionLayout.getHeight() + TEXT_SPACING;
+    if (confirmLabelLayout == null) {
+      return titleLayout.getHeight() + descriptionLayout.getHeight() + TEXT_SPACING;
+    }
+
+    return titleLayout.getHeight() + descriptionLayout.getHeight() + confirmLabelLayout.getHeight() + TEXT_SPACING * 2;
   }
 
   int getTotalTextWidth() {
@@ -1020,7 +1059,12 @@ public class TapTargetView extends View {
       return titleLayout.getWidth();
     }
 
-    return Math.max(titleLayout.getWidth(), descriptionLayout.getWidth());
+    int maxTitleDescriptionWidth = Math.max(titleLayout.getWidth(), descriptionLayout.getWidth());
+    if (confirmLabelLayout == null) {
+      return maxTitleDescriptionWidth;
+    }
+
+    return Math.max(maxTitleDescriptionWidth, confirmLabelLayout.getWidth());
   }
 
   boolean inGutter(int y) {
