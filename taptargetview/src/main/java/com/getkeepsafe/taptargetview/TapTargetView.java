@@ -248,7 +248,9 @@ public class TapTargetView extends View {
       outerCircleRadius = newOuterCircleRadius;
       outerCircleAlpha = (int) Math.min(targetAlpha, (lerpTime * 1.5f * targetAlpha));
       outerCirclePath.reset();
-      outerCirclePath.addCircle(outerCircleCenter[0], outerCircleCenter[1], outerCircleRadius, Path.Direction.CW);
+      if (outerCircleCenter != null) {
+        outerCirclePath.addCircle(outerCircleCenter[0], outerCircleCenter[1], outerCircleRadius, Path.Direction.CW);
+      }
 
       targetCircleAlpha = (int) Math.min(255.0f, (lerpTime * 1.5f * 255.0f));
 
@@ -352,7 +354,9 @@ public class TapTargetView extends View {
           outerCircleRadius = calculatedOuterCircleRadius * (1.0f + (spedUpLerp * 0.2f));
           outerCircleAlpha = (int) ((1.0f - spedUpLerp) * target.outerCircleAlpha * 255.0f);
           outerCirclePath.reset();
-          outerCirclePath.addCircle(outerCircleCenter[0], outerCircleCenter[1], outerCircleRadius, Path.Direction.CW);
+          if (outerCircleCenter != null) {
+            outerCirclePath.addCircle(outerCircleCenter[0], outerCircleCenter[1], outerCircleRadius, Path.Direction.CW);
+          }
           targetCircleRadius = (1.0f - lerpTime) * TARGET_RADIUS;
           targetCircleWidth = (1.0f - lerpTime) * TARGET_WIDTH;
           targetCircleHeight = (1.0f - lerpTime) * TARGET_HEIGHT;
@@ -806,13 +810,17 @@ public class TapTargetView extends View {
     final float baseAlpha = 0.20f * outerCircleAlpha;
     outerCircleShadowPaint.setStyle(Paint.Style.FILL_AND_STROKE);
     outerCircleShadowPaint.setAlpha((int) baseAlpha);
-    c.drawCircle(outerCircleCenter[0], outerCircleCenter[1] + SHADOW_DIM, outerCircleRadius, outerCircleShadowPaint);
+    if (outerCircleCenter != null) {
+      c.drawCircle(outerCircleCenter[0], outerCircleCenter[1] + SHADOW_DIM, outerCircleRadius, outerCircleShadowPaint);
+    }
     outerCircleShadowPaint.setStyle(Paint.Style.STROKE);
     final int numJitters = 7;
     for (int i = numJitters - 1; i > 0; --i) {
       outerCircleShadowPaint.setAlpha((int) ((i / (float) numJitters) * baseAlpha));
-      c.drawCircle(outerCircleCenter[0], outerCircleCenter[1] + SHADOW_DIM ,
-          outerCircleRadius + (numJitters - i) * SHADOW_JITTER_DIM , outerCircleShadowPaint);
+      if (outerCircleCenter != null) {
+        c.drawCircle(outerCircleCenter[0], outerCircleCenter[1] + SHADOW_DIM,
+                outerCircleRadius + (numJitters - i) * SHADOW_JITTER_DIM, outerCircleShadowPaint);
+      }
     }
   }
 
