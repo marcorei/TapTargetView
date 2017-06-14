@@ -439,7 +439,7 @@ public class TapTargetView extends View {
     descriptionPaint.setTextSize(target.descriptionTextSizePx(context));
     descriptionPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL));
     descriptionPaint.setAntiAlias(true);
-    descriptionPaint.setAlpha((int) (0.54f * 255.0f));
+//    descriptionPaint.setAlpha((int) (0.54f * 255.0f));
 
     outerCirclePaint = new Paint();
     outerCirclePaint.setAntiAlias(true);
