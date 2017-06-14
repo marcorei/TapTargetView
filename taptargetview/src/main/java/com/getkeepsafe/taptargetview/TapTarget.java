@@ -271,7 +271,7 @@ public class TapTarget {
   public TapTarget textColor(@ColorRes int color) {
     this.titleTextColorRes = color;
     this.descriptionTextColorRes = color;
-    this.confirmLabelTextColor = color;
+    this.confirmLabelTextColorRes = color;
     return this;
   }
 
@@ -312,7 +312,7 @@ public class TapTarget {
 
   /** Specify the color value for the confirm text **/
   public TapTarget confirmTextColor(@ColorRes int color) {
-    this.confirmLabelTextColor = color;
+    this.confirmLabelTextColorRes = color;
     return this;
   }
 
