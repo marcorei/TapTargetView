@@ -32,23 +32,27 @@ import java.util.Stack;
 
 class ToolbarTapTarget extends ViewTapTarget {
   ToolbarTapTarget(Toolbar toolbar, @IdRes int menuItemId,
-                   CharSequence title, @Nullable CharSequence description) {
-    super(toolbar.findViewById(menuItemId), title, description);
+                   CharSequence title, @Nullable CharSequence description,
+                   @Nullable CharSequence confirmLabel) {
+    super(toolbar.findViewById(menuItemId), title, description, confirmLabel);
   }
 
   ToolbarTapTarget(android.widget.Toolbar toolbar, @IdRes int menuItemId,
-                   CharSequence title, @Nullable CharSequence description) {
-    super(toolbar.findViewById(menuItemId), title, description);
+                   CharSequence title, @Nullable CharSequence description,
+                   @Nullable CharSequence confirmLabel) {
+    super(toolbar.findViewById(menuItemId), title, description, confirmLabel);
   }
 
   ToolbarTapTarget(Toolbar toolbar, boolean findNavView,
-                   CharSequence title, @Nullable CharSequence description) {
-    super(findNavView ? findNavView(toolbar) : findOverflowView(toolbar), title, description);
+                   CharSequence title, @Nullable CharSequence description,
+                   @Nullable CharSequence confirmLabel) {
+    super(findNavView ? findNavView(toolbar) : findOverflowView(toolbar), title, description, confirmLabel);
   }
 
   ToolbarTapTarget(android.widget.Toolbar toolbar, boolean findNavView,
-                   CharSequence title, @Nullable CharSequence description) {
-    super(findNavView ? findNavView(toolbar) : findOverflowView(toolbar), title, description);
+                   CharSequence title, @Nullable CharSequence description,
+                   @Nullable CharSequence confirmLabel) {
+    super(findNavView ? findNavView(toolbar) : findOverflowView(toolbar), title, description, confirmLabel);
   }
 
   private static ToolbarProxy proxyOf(Object instance) {
