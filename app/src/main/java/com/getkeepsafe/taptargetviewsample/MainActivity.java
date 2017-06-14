@@ -47,15 +47,15 @@ public class MainActivity extends AppCompatActivity {
         // We have a sequence of targets, so lets build it!
         final TapTargetSequence sequence = new TapTargetSequence(this)
                 .targets(
-                        TapTarget.forView(findViewById(R.id.button), "This is the button", "Rounded rect")
+                        TapTarget.forView(findViewById(R.id.button), "This is the button", "Rounded rect", "OK!")
                                 .transparentTarget(true)
                                 .targetWidth(170)
                                 .targetPulseEnabled(false)
                                 .targetRadius(20),
                         // This tap target will target the back button, we just need to pass its containing toolbar
-                        TapTarget.forToolbarNavigationIcon(toolbar, "This is the back button", sassyDesc).id(1),
+                        TapTarget.forToolbarNavigationIcon(toolbar, "This is the back button", sassyDesc, "OK!").id(1),
                         // Likewise, this tap target will target the search button
-                        TapTarget.forToolbarMenuItem(toolbar, R.id.search, "This is a search icon", "As you can see, it has gotten pretty dark around here...")
+                        TapTarget.forToolbarMenuItem(toolbar, R.id.search, "This is a search icon", "As you can see, it has gotten pretty dark around here...", "GOT IT!")
                                 .dimColor(android.R.color.black)
                                 .outerCircleColor(R.color.colorAccent)
                                 .targetCircleColor(android.R.color.black)
@@ -63,9 +63,9 @@ public class MainActivity extends AppCompatActivity {
                                 .textColor(android.R.color.black)
                                 .id(2),
                         // You can also target the overflow button in your toolbar
-                        TapTarget.forToolbarOverflow(toolbar, "This will show more options", "But they're not useful :(").id(3),
+                        TapTarget.forToolbarOverflow(toolbar, "This will show more options", "But they're not useful :(", "Meh!").id(3),
                         // This tap target will target our droid buddy at the given target rect
-                        TapTarget.forBounds(droidTarget, "Oh look!", "You can point to any part of the screen. You also can't cancel this one!")
+                        TapTarget.forBounds(droidTarget, "Oh look!", "You can point to any part of the screen. You also can't cancel this one!", "Ok!")
                                 .cancelable(false)
                                 .icon(droid)
                                 .id(4)
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                                 .setMessage("You canceled the sequence")
                                 .setPositiveButton("Oops", null).show();
                         TapTargetView.showFor(dialog,
-                                TapTarget.forView(dialog.getButton(DialogInterface.BUTTON_POSITIVE), "Uh oh!", "You canceled the sequence at step " + lastTarget.id())
+                                TapTarget.forView(dialog.getButton(DialogInterface.BUTTON_POSITIVE), "Uh oh!", "You canceled the sequence at step " + lastTarget.id(), "GOT IT!")
                                         .cancelable(false)
                                         .tintTarget(false), new TapTargetView.Listener() {
                                     @Override
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         // You don't always need a sequence, and for that there's a single time tap target
         final SpannableString spannedDesc = new SpannableString("This is the sample app for TapTargetView");
         spannedDesc.setSpan(new UnderlineSpan(), spannedDesc.length() - "TapTargetView".length(), spannedDesc.length(), 0);
-        TapTargetView.showFor(this, TapTarget.forView(findViewById(R.id.fab), "Hello, world!", spannedDesc)
+        TapTargetView.showFor(this, TapTarget.forView(findViewById(R.id.fab), "Hello, world!", spannedDesc, "OK!")
                 .cancelable(false)
                 .drawShadow(true)
                 .titleTextDimen(R.dimen.title_text_size)
